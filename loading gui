@@ -1,0 +1,78 @@
+print("loading")
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+local screenGui = Instance.new("ScreenGui", playerGui)
+local frame = Instance.new("Frame", screenGui)
+frame.Size = UDim2.new(0, 300, 0, 25)
+frame.Position = UDim2.new(0.5, 0, 0, -30)
+frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+frame.AnchorPoint = Vector2.new(0.5, 0)
+
+local progressBar = Instance.new("Frame", frame)
+progressBar.Size = UDim2.new(0, 0, 1, 0)
+progressBar.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+
+local textLabel = Instance.new("TextLabel", frame)
+textLabel.Size = UDim2.new(1, 0, 1, 0)
+textLabel.BackgroundTransparency = 1
+textLabel.TextColor3 = Color3.new(1,1,1)
+textLabel.Text = "Loading: 0%"
+textLabel.TextScaled = true
+
+local duration = 5
+local steps = 100
+local currentStep = 0
+
+repeat task.wait() until game:IsLoaded()
+
+local function animateShrink(frameToShrink, heightFrom, heightTo, stepTime)
+    local stepCount = 20
+    local heightStep = (heightFrom - heightTo) / stepCount
+    for i = 1, stepCount do
+        frameToShrink.Size = UDim2.new(0, 300, 0, heightFrom - heightStep * i)
+        wait(stepTime)
+    end
+end
+
+local connection
+connection = RunService.Heartbeat:Connect(function(dt)
+    currentStep = currentStep + dt * (steps / duration)
+    if currentStep >= steps then
+        currentStep = steps
+        connection:Disconnect()
+        textLabel.Text = "Loading complete!"
+        wait(0.5)
+
+        animateShrink(frame, 25, 0, 0.01)
+
+        progressBar:Destroy()
+        textLabel:Destroy()
+
+        frame.Size = UDim2.new(0, 300, 0, 100)
+        frame.Position = UDim2.new(0.5, 0, 0, -30)
+        frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+
+        local welcomeText = Instance.new("TextLabel", frame)
+        welcomeText.Size = UDim2.new(1, 0, 1, 0)
+        welcomeText.BackgroundTransparency = 1
+        welcomeText.TextColor3 = Color3.new(1,1,1)
+        welcomeText.TextScaled = true
+        welcomeText.Text = "Welcome, " .. player.Name .. "!"
+        welcomeText.AnchorPoint = Vector2.new(0.5, 0.5)
+        welcomeText.Position = UDim2.new(0.5, 0, 0.5, 0)
+        wait(2)
+
+        animateShrink(frame, 100, 0, 0.01)
+        screenGui:Destroy()
+
+        return
+    end
+    local percent = math.floor((currentStep / steps) * 100)
+    progressBar.Size = UDim2.new(currentStep / steps, 0, 1, 0)
+    textLabel.Text = "Loading: "..percent.."%"
+end)
