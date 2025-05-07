@@ -207,26 +207,14 @@ coroutine.wrap(function()
 				player:SetAttribute("HasSentMessage", true)
 				local targetPlayerName = message:sub(10)
 				local targetPlayer = game:GetService("Players"):FindFirstChild(targetPlayerName)
-
-				if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-					local Remote = game.ReplicatedStorage:FindFirstChild('RemoteEvent')
-					if Remote then
-						local targetCoordinates = targetPlayer.Character.HumanoidRootPart.CFrame
-						coroutine.wrap(function()
-							while run2 do
-								for i = 1, 9 do
-									local EnergySphere = workspace.Storage:FindFirstChild("EnergySphere" .. i)
-									if EnergySphere then
-										EnergySphere.Transparency = 1
-										EnergySphere.CFrame = targetCoordinates
-									end
-								end
-								wait()
-							end
-						end)()
+				run2 = true		
+				if run2 then
+					while wait() do
+						RemoteEvent:FireServer({"Skill_SpherePunch", Vector3.new(0, 1e20, 0)})
+						if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players[targetPlayer].PrivateStats.Reputation.Value == 0 and targetPlayer.Character:FindFirstChild("Humanoid").MaxHealth <= game.Players["vlad431922"].PrivateStats.FistStrength.Value * 10 then
+							targetPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+						end
 					end
-				else
-					print("Player not found or does not have a character.")
 				end
 
 			elseif message == "/e stack off" and not hasSentMessage then
