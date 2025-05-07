@@ -1,0 +1,626 @@
+print("...")
+local plr = game:GetService("Players").LocalPlayer
+local char = plr.Character
+local root = char.HumanoidRootPart
+local Plrs = game:GetService("Players")
+local MyPlr = Plrs.LocalPlayer
+local MyChar = MyPlr.Character
+local UIS = game:GetService'UserInputService'
+local RepStor = game:GetService("ReplicatedStorage")
+local CoreGui = game:GetService("CoreGui")
+local Run = game:GetService("RunService")
+local mouse = game.Players.LocalPlayer:GetMouse()
+local human = plr.Character:WaitForChild("Humanoid")
+
+local VirtualUser=game:service'VirtualUser'
+game:service'Players'.LocalPlayer.Idled:connect(function()
+	VirtualUser:CaptureController()
+	VirtualUser:ClickButton2(Vector2.new())
+end)
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local kill = false
+local hasSentMessage = false
+local deathreturnactive = true
+local UIS = game:GetService'UserInputService'
+local plr = Players.LocalPlayer
+local char = plr.Character
+local root = char and char:FindFirstChild("HumanoidRootPart")
+local UIS = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local mouse = plr:GetMouse()
+local human = char and char:WaitForChild("Humanoid")
+local MainGUI = Instance.new("ScreenGui")
+local farmfistactive = false
+local farmpsychicactive = false
+local Players = game:GetService("Players")
+local TextService = game:GetService("TextService")
+local clanMembers = {
+    "Artigarasu",
+    "sorryrobloxsorrynoo",
+    "adminoo2201",
+    "stanislav23987",
+    "Ramil0341",
+    "Dosent_ha",
+    "FruTiK101",
+    "GostZomd",
+    "fofaraon02",
+    "Artmmm229poterlak",
+    "vlad431922",
+    "Quphang1",
+    "lerok200976",
+    "GaladonT",
+    "betto_15896"
+}
+local kosMembers = {
+    "GAMEMASTERv22",
+    "GAMER_PROAHAT",
+    "IshakTur0ay",
+    "Nikoreta09",
+    "thecoptinpoo",
+    "TahNaJaCT",
+    "Zack7757",
+    "zachod147"
+}
+local run2 = false
+local NI = true
+local AllStatsFrame = Instance.new("Frame")
+local AllStatsText = Instance.new("TextLabel")
+local AllPlayersButton = Instance.new("TextButton")
+local LeaderBordPos = Instance.new("TextButton")
+local gm = false
+repeat task.wait() until game:IsLoaded()
+
+local isnetworkowner = isnetworkowner or function() return true end
+local cloneref = cloneref or function(instance) return instance end
+local Services = setmetatable({}, {
+    ["__index"] = function(self, Name)
+        local Service = cloneref(game:GetService(Name))
+        self[Name] = Service
+        return Service
+    end
+})
+local ReplicatedStorage = Services.ReplicatedStorage
+local RemoteEvent = ReplicatedStorage.RemoteEvent
+local RemoteFunction = ReplicatedStorage.RemoteFunction
+local RunService = Services.RunService
+local UserInputService = Services.UserInputService
+local TeleportService = Services.TeleportService
+local HttpService = Services.HttpService 
+local TweenService = Services.TweenService
+local Lighting = Services.Lighting
+local Stats = Services.Stats
+local StarterGui = Services.StarterGui
+local VirtualUser = Services.VirtualUser
+local Workspace = Services.Workspace
+local CoreGui = Services.CoreGui
+local Players = Services.Players
+local LocalPlayer = Players.LocalPlayer
+local PrivateStats = LocalPlayer.PrivateStats
+local PlayerGui = LocalPlayer.PlayerGui
+local ScreenGui = PlayerGui.ScreenGui
+local Camera = Workspace.CurrentCamera
+local Storage = Workspace.Storage
+local PlaceId = game.PlaceId
+local JobId = game.JobId
+local identifyexecutor = identifyexecutor or function() return "hueta" end
+local InjectorName = identifyexecutor()
+local RespawnHealth = .5
+local StockGravity = 196.1999969482422
+local teleportsvalue, teleportposition, oldUtilities = {}, {}, {}
+local Targets, Whitelisted, Target = {}, {}, Players:GetChildren()[math.random(1, #Players:GetChildren())].Name
+local TCAdded, LPCAdded, CChanged, RespawnFunction, Teleported, Changed, SavedCameraCFrame, SavedPosition, GodCheck
+
+-- Main GUI setup
+MainGUI.Name = "MainGUI"
+MainGUI.Parent = CoreGui
+MainGUI.ResetOnSpawn = false
+
+AllStatsFrame.Name = "AllStatsFrame"
+AllStatsFrame.Parent = MainGUI
+AllStatsFrame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+AllStatsFrame.BorderColor3 = Color3.new(0, 0, 0)
+AllStatsFrame.BackgroundTransparency = 0.5
+AllStatsFrame.Position = UDim2.new(0.5, -341.5, 0, 10)
+AllStatsFrame.Size = UDim2.new(0, 683, 0, 380) 
+AllStatsFrame.Visible = false
+
+AllStatsText.Name = "AllStatsText"
+AllStatsText.Parent = AllStatsFrame
+AllStatsText.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+AllStatsText.BackgroundTransparency = 1
+AllStatsText.Position = UDim2.new(0.5, -50, 0, -5)
+AllStatsText.Size = UDim2.new(0, 100, 0, 30)
+AllStatsText.Font = Enum.Font.Fantasy
+AllStatsText.TextColor3 = Color3.new(1, 1, 1)
+AllStatsText.Text = "All players stats"
+AllStatsText.TextSize = 15
+AllStatsText.TextXAlignment = Enum.TextXAlignment.Right
+
+settplocation = false
+
+local function convertToLetter(value)
+    return value
+end
+
+CharAddedEvent = { }
+
+local MainGUI = Instance.new("ScreenGui")
+local TopFrame = Instance.new("Frame")
+local MainFrame = Instance.new("Frame")
+MainGUI.Name = "MainGUI"
+MainGUI.Parent = game.CoreGui
+MainGUI.ResetOnSpawn = false
+
+function round(num, numDecimalPlaces)
+	local mult = 10^(numDecimalPlaces or 0)
+	return math.floor(num * mult + 0.5) / mult
+end
+		
+function converttoletter(num)
+	if num / 1e21 >=1 then
+		newnum = num / 1e21
+		return round(newnum, 6).. "Sx"
+	elseif num / 1e18 >=1 then
+		newnum = num / 1e18
+		return round(newnum, 6).. "Qi"
+	elseif num / 1e15 >=1 then
+		newnum = num / 1e15
+		return round(newnum, 6).. "Qa"
+	elseif num / 1e12 >=1 then
+		newnum = num / 1e12
+		return round(newnum, 6).. "T"
+	elseif num / 1e09 >=1 then
+		newnum = num / 1e09
+		return round(newnum, 6).. "B"
+	elseif num / 1e06 >=1 then
+		newnum = num / 1e06
+		return round(newnum, 6).. "M"
+	elseif num / 1e03 >=1 then
+		newnum = num / 1e03
+		return round(newnum, 6).. "K"
+	else return num
+	end
+end
+
+
+coroutine.wrap(function()
+	while true do
+		local function onPlayerChatted(player, message, hasSentMessage)	
+			
+			if message == "/e stack on" and not hasSentMessage then
+				run2 = true		
+				if run2 then
+					while wait() do
+						RemoteEvent:FireServer({"Skill_SpherePunch", Vector3.new(0, 1e20, 0)})
+						for i, player in ipairs(game.Players:GetChildren()) do
+							if player.Character and player.Character:FindFirstChild("HumanoidRootPart") and game.Players[player.Name].PrivateStats.Reputation.Value == 0 and player.Character:FindFirstChild("Humanoid").MaxHealth <= game.Players["vlad431922"].PrivateStats.FistStrength.Value * 10 then
+								player.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+							end
+						end
+					end
+				end
+
+			elseif message:sub(1, 12) == "/e stack on " and not hasSentMessage then
+				run2 = true
+				player:SetAttribute("HasSentMessage", true)
+				local targetPlayerName = message:sub(10)
+				local targetPlayer = game:GetService("Players"):FindFirstChild(targetPlayerName)
+
+				if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+					local Remote = game.ReplicatedStorage:FindFirstChild('RemoteEvent')
+					if Remote then
+						local targetCoordinates = targetPlayer.Character.HumanoidRootPart.CFrame
+						coroutine.wrap(function()
+							while run2 do
+								for i = 1, 9 do
+									local EnergySphere = workspace.Storage:FindFirstChild("EnergySphere" .. i)
+									if EnergySphere then
+										EnergySphere.Transparency = 1
+										EnergySphere.CFrame = targetCoordinates
+									end
+								end
+								wait()
+							end
+						end)()
+					end
+				else
+					print("Player not found or does not have a character.")
+				end
+
+			elseif message == "/e stack off" and not hasSentMessage then
+				run2 = false
+
+
+			elseif message == "/e kreap" and not hasSentMessage then
+				kill = true
+				local localPlayer = Players.LocalPlayer
+				while kill do
+					for _, target in ipairs(Players:GetPlayers()) do
+						if target ~= localPlayer and target.Character then
+							local playerPrivateStats = target:FindFirstChild("PrivateStats")
+							if playerPrivateStats then
+								local playerPsychicPower = playerPrivateStats:FindFirstChild("PsychicPower")
+								if playerPsychicPower then
+									local psychicPower = playerPsychicPower.Value
+									local localPlayerPrivateStats = localPlayer:FindFirstChild("PrivateStats")
+									if localPlayerPrivateStats then
+										local localPlayerPsychicPower = localPlayerPrivateStats:FindFirstChild("PsychicPower")
+										if localPlayerPsychicPower then
+											local localPlayerPower = localPlayerPsychicPower.Value / 100
+											if psychicPower <= localPlayerPower then
+												local humanoid = target.Character:FindFirstChildOfClass("Humanoid")
+												if humanoid then
+													local playerHealth = convertToLetter(string.format("%.0f", humanoid.Health))
+													ReplicatedStorage.RemoteEvent:FireServer({"Skill_SoulReap", target})
+
+													local healthCheckInterval = 0.5
+													while humanoid.Health > 0 do
+														wait(healthCheckInterval)
+														ReplicatedStorage.RemoteEvent:FireServer({"Skill_SoulReap", target})
+													end
+												end
+											end
+										end
+									end
+								end
+							end
+						end
+					end
+					wait(1)
+				end
+				player:SetAttribute("HasSentMessage", true)
+
+			elseif message == "/e kreap off" and not hasSentMessage then
+				run2 = false
+
+			elseif message:sub(1, 12) == "/e kreap on " and not hasSentMessage then
+				run2 = true
+				player:SetAttribute("HasSentMessage", true)
+				local targetPlayerName = message:sub(13)
+				local targetPlayer = game:GetService("Players"):FindFirstChild(targetPlayerName)
+				coroutine.wrap(function()
+					while run2 do
+						local humanoid = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
+						if humanoid then
+							local playerHealth = convertToLetter(string.format("%.0f", humanoid.Health))
+
+							local healthCheckInterval = 0.5
+							while humanoid.Health > 0 do
+								wait(healthCheckInterval)
+								ReplicatedStorage.RemoteEvent:FireServer({"Skill_SoulReap", targetPlayer})
+							end
+						end
+						wait(0.1)
+					end
+				end)()
+				
+
+			elseif message:sub(1, 13) == "/e kreap off" and not hasSentMessage then
+				run2 = false
+			
+			elseif message == "/e spawn" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(459, 248, 887)
+					
+			elseif message == "/e fs cristal" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(409, 271, 978)
+
+			elseif message == "/e fs 1b" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1176, 4789, -2293)
+
+			elseif message == "/e fs 10t" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-369, 15735, -9)
+
+			elseif message == "/e fs 100b" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1381, 9274, 1647)
+
+			elseif message == "/e fs" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2279, 1944, 1053)
+
+			elseif message == "/e bt 100" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(365, 249, -445)
+
+			elseif message == "/e bt 10k" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(349, 263, -490)
+
+			elseif message == "/e bt 100k" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1640, 258, 2244)
+			
+
+			elseif message == "/e bt 1m" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2307, 976, 1068)
+			
+
+			elseif message == "/e bt 100m" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2024, 714, -1860)
+			
+
+			elseif message == "/e bt 1b" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-254, 286, 980)
+			
+
+			elseif message == "/e bt 100b" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-271, 279, 991)
+			
+
+			elseif message == "/e bt 10t" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-279, 279, 1007)
+			
+
+			elseif message == "/e pp 1m" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2527, 5486, -532)
+			
+
+			elseif message == "/e pp 1b" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2560, 5500, -439)
+			
+
+			elseif message == "/e pp 1t" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2582, 5516, -504)
+			
+
+			elseif message == "/e pp 1qa" and not hasSentMessage then
+					game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2544, 5412, -495)
+			
+			elseif message == "/e farm fs" and not hasSentMessage then 
+				-- print("on")
+				farmfistactive = not farmfistactive
+				spawn(function()
+					while true do
+						if farmfistactive and game.Players.LocalPlayer.Character:WaitForChild("Humanoid") then
+							if tonumber(string.format("%.0f", game.Players.LocalPlayer.PrivateStats.FistStrength.Value)) >= 10e12 then
+								game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-369, 15735, -9)
+								fistarguments = {"+FS6"}
+							elseif tonumber(string.format("%.0f", game.Players.LocalPlayer.PrivateStats.FistStrength.Value)) >= 100e09 then
+								game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1381, 9274, 1647)
+								fistarguments = {"+FS5"}
+							elseif tonumber(string.format("%.0f", game.Players.LocalPlayer.PrivateStats.FistStrength.Value)) >= 1e09 then
+								game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(1176, 4789, -2293)
+								fistarguments = {"+FS4"}
+							else
+								fistarguments = {"+FS3", "+FS2", "+FS1"}
+							end
+							while farmfistactive do
+								game:GetService('RunService').Stepped:wait()
+								for i,v in pairs(fistarguments) do
+									game.ReplicatedStorage.RemoteEvent:FireServer({[1] = v})
+								end
+							end
+						end
+						wait(0.25)
+					end
+				end)
+				player:SetAttribute("HasSentMessage", true)
+
+			elseif message == "/e farm pp" and not hasSentMessage then 
+				-- print("on")
+				farmpsychicactive = not farmpsychicactive
+				spawn(function()
+					while true do
+						if farmpsychicactive and game.Players.LocalPlayer.Character:WaitForChild("Humanoid") then
+							if tonumber(string.format("%.0f", game.Players.LocalPlayer.PrivateStats.PsychicPower.Value)) >= 1e15 then
+								game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2544, 5412, -495)
+								psychicarguments = {"+PP6"}
+							elseif tonumber(string.format("%.0f", game.Players.LocalPlayer.PrivateStats.PsychicPower.Value)) >= 1e12 then
+								game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2582, 5516, -504)
+								psychicarguments = {"+PP5"}
+							elseif tonumber(string.format("%.0f", game.Players.LocalPlayer.PrivateStats.PsychicPower.Value)) >= 1e09 then
+								game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2560, 5500, -439)
+								psychicarguments = {"+PP4"}
+							elseif tonumber(string.format("%.0f", game.Players.LocalPlayer.PrivateStats.PsychicPower.Value)) >= 1e06 then
+								game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-2527, 5486, -532)
+							else
+								psychicarguments = {"+PP2", "+PP1"}
+							end
+							
+							while farmpsychicactive do
+								game:GetService('RunService').Stepped:wait()
+								for i,v in pairs(psychicarguments) do
+									game.ReplicatedStorage.RemoteEvent:FireServer({[1] = v})
+								end
+							end
+						end
+						wait(1)
+					end
+				end)
+				player:SetAttribute("HasSentMessage", true)
+			
+			elseif message == "/e print" and not hasSentMessage then
+				print("hi vlad431922")
+				player:SetAttribute("HasSentMessage", true)
+
+			elseif message == "/e rej" and not hasSentMessage then
+				game:GetService("TeleportService"):Teleport(2202352383)
+				player:SetAttribute("HasSentMessage", true)
+
+			elseif message == "/e lb1" and not hasSentMessage then
+				player:SetAttribute("HasSentMessage", true)
+				
+				local leaderboardParts = {
+					FistStrengthLeaderBoardPart = { rotation = Vector3.new(0, 89.539, 0), position = Vector3.new(361, 253.69, 775) },
+					TotalPowerLeaderBoardPart = { rotation = Vector3.new(0, 89.539, 0), position = Vector3.new(361, 253.69, 800) },
+					BodyToughnessLeaderBoardPart = { rotation = Vector3.new(0, 89.539, 0), position = Vector3.new(361, 253.69, 825) }
+				}
+
+				for partName, transformations in pairs(leaderboardParts) do
+
+					local part = Workspace.Main:FindFirstChild(partName) 
+					if part then
+						local newCFrame = CFrame.new(part.Position) * CFrame.Angles(transformations.rotation.X, transformations.rotation.Y, transformations.rotation.Z)
+						part.CFrame = newCFrame
+						part.Position = transformations.position
+					else
+						warn(partName .. " not found in Workspace.Main")
+					end
+				end
+				
+			elseif message == "/e lb2" and not hasSentMessage then
+				player:SetAttribute("HasSentMessage", true)
+
+				local leaderboardParts = {
+					FistStrengthLeaderBoardPart = { rotation = Vector3.new(0, 216.76, 0), position = Vector3.new(260.4, 301.38, 785) },
+					TotalPowerLeaderBoardPart = { rotation = Vector3.new(0, -89.539, 0), position = Vector3.new(248.5, 301.38, 796.7) },
+					BodyToughnessLeaderBoardPart = { rotation = Vector3.new(0, 89.539, 0), position = Vector3.new(272.3, 301.38, 796.7) }
+				}
+
+				for partName, transformations in pairs(leaderboardParts) do
+
+					local part = Workspace.Main:FindFirstChild(partName) 
+					if part then
+						local newCFrame = CFrame.new(part.Position) * CFrame.Angles(transformations.rotation.X, transformations.rotation.Y, transformations.rotation.Z)
+						part.CFrame = newCFrame
+						part.Position = transformations.position
+					end
+				end
+			
+			elseif message == "/e aps on" and not hasSentMessage then    
+				NI = true
+				AllStatsFrame.Visible = NI
+
+				while NI do
+					local function updateAllStatsFrameSize()
+						local playerCount = #Players:GetPlayers() 
+						local rows = math.ceil(playerCount / 5)
+						AllStatsFrame.Size = UDim2.new(0, 683, 0, 33 + (rows * 90)) 
+					end
+
+					local function createPlayerStatLabels()
+						for _, player in ipairs(Players:GetPlayers()) do
+							local index = _ 
+							local offset = 90 * math.floor((index - 1) / 5) 
+							local column = (index - 1) % 5 
+
+							local function formatNumber(value)
+								if value < 1000 then
+									return tostring(value)
+								elseif value < 1000000 then
+									local formatted = value / 1000
+									return string.format(formatted % 1 == 0 and "%.0fK" or "%.2fK", formatted)
+								elseif value < 1000000000 then
+									local formatted = value / 1000000
+									return string.format(formatted % 1 == 0 and "%.0fM" or "%.2fM", formatted)
+								elseif value < 1000000000000 then
+									local formatted = value / 1000000000
+									return string.format(formatted % 1 == 0 and "%.0fB" or "%.2fB", formatted)
+								elseif value < 1000000000000000 then
+									local formatted = value / 1000000000000
+									return string.format(formatted % 1 == 0 and "%.0fT" or "%.2fT", formatted)
+								elseif value < 1000000000000000000 then
+									local formatted = value / 1000000000000000
+									return string.format(formatted % 1 == 0 and "%.0fQa" or "%.2fQa", formatted)
+								else
+									local formatted = value / 1000000000000000000
+									return string.format(formatted % 1 == 0 and "%.0fQi" or "%.2fQi", formatted)
+								end
+							end
+							
+							local playerStatText = Instance.new("TextLabel")
+							playerStatText.Name = "PlayerStat" 
+							playerStatText.Parent = AllStatsFrame
+							playerStatText.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+							playerStatText.BackgroundTransparency = 1
+							playerStatText.Position = UDim2.new(0, 25 + (column * 140), 0, 50 + offset)
+							playerStatText.Size = UDim2.new(0, 70, 0, 30)
+							playerStatText.Font = Enum.Font.Fantasy
+							playerStatText.TextColor3 = Color3.new(1, 1, 1)
+							playerStatText.Text = player.Name .. "\nBody: "..formatNumber(game.Players[player.Name].PrivateStats.BodyToughness.Value).. "\nFist: "..formatNumber(game.Players[player.Name].PrivateStats.FistStrength.Value) .."\nPps: "..formatNumber(game.Players[player.Name].PrivateStats.PsychicPower.Value)
+							playerStatText.TextSize = 15
+
+							if table.find(kosMembers, player.Name) then
+								playerStatText.TextColor3 = Color3.new(1, 0, 0)
+							else
+								playerStatText.TextColor3 = Color3.new(1, 1, 1) 
+							end
+
+						end
+					end
+
+					local function clearPlayerStatLabels()
+						for _, child in ipairs(AllStatsFrame:GetChildren()) do
+							if string.find(child.Name, "PlayerStat") then
+								child:Destroy()
+							end
+						end
+					end
+
+					local function updatePlayerStats()
+						clearPlayerStatLabels()
+						createPlayerStatLabels()
+						updateAllStatsFrameSize()
+					end
+
+					updatePlayerStats()	
+					wait(1) 
+				end
+			
+			elseif message == "/e aps off" and not hasSentMessage then
+				NI = false			
+				AllStatsFrame.Visible = NI
+
+			elseif message == "/e dp" and not hasSentMessage then
+				if deathreturnactive then
+					deathreturnactive = true
+				else
+					deathreturnactive = false
+				end
+
+				spawn(function()
+					while true do
+
+						if deathreturnactive then
+							player = game:GetService("Players").LocalPlayer
+							player.Character.Humanoid.Died:connect(function()
+								playerdied = true
+							end)
+						end
+						if not playerdied then
+							lastlocationx = game.Players.LocalPlayer.Character.HumanoidRootPart.Position.x
+							lastlocationy = game.Players.LocalPlayer.Character.HumanoidRootPart.Position.y
+							lastlocationz = game.Players.LocalPlayer.Character.HumanoidRootPart.Position.z
+							wait(0.5)
+						end
+						if playerdied then
+							game:GetService("ReplicatedStorage").RemoteEvent:FireServer({[1] = "Respawn"})
+							wait(2.6)
+							repeat wait(0.1) until game.Players.LocalPlayer.Character.Humanoid
+							if deathreturnactive then
+								local FindHum = game.Players.LocalPlayer.Character:WaitForChild("Humanoid")
+								game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(lastlocationx, lastlocationy, lastlocationz)
+							end    
+							wait(0.5)      
+							game.Lighting.Blur.Enabled = false
+							game.Players.LocalPlayer.PlayerGui.IntroGui.Enabled = false
+							game.Players.LocalPlayer.PlayerGui.ScreenGui.Enabled = true
+							playerdied = false
+						end
+						for _, v in next, Plrs:GetPlayers() do
+							UpdateESP(v)
+						end
+						wait(1)
+						
+					end		
+				end)
+				player:SetAttribute("HasSentMessage", true)
+			end
+		end
+
+		Players.PlayerAdded:Connect(function(player)
+			player:SetAttribute("HasSentMessage", false)
+			
+			player.Chatted:Connect(function(message)
+				local hasSentMessage = player:GetAttribute("HasSentMessage")
+				onPlayerChatted(player, message, hasSentMessage)    
+			end)
+		end)
+
+		for _, player in ipairs(Players:GetPlayers()) do
+			player:SetAttribute("HasSentMessage", false)
+			player.Chatted:Connect(function(message)
+				local hasSentMessage = player:GetAttribute("HasSentMessage")
+				onPlayerChatted(player, message, hasSentMessage)
+			end)
+		end
+		wait(1)
+	end
+end)()
