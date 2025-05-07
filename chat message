@@ -205,16 +205,30 @@ coroutine.wrap(function()
 			elseif message:sub(1, 12) == "/e stack on " and not hasSentMessage then
 				run2 = true
 				player:SetAttribute("HasSentMessage", true)
-				local targetPlayerName = message:sub(10)
-				local targetPlayer = game:GetService("Players"):FindFirstChild(targetPlayerName)
-				run2 = true		
-				if run2 then
-					while wait() do
-						RemoteEvent:FireServer({"Skill_SpherePunch", Vector3.new(0, 1e20, 0)})
-						if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") and game.Players[targetPlayer].PrivateStats.Reputation.Value == 0 and targetPlayer.Character:FindFirstChild("Humanoid").MaxHealth <= game.Players["vlad431922"].PrivateStats.FistStrength.Value * 10 then
-							targetPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+				local partialName = message:sub(13):lower()
+				local Players = game:GetService("Players")
+				local targetPlayer = nil
+
+				for _, p in pairs(Players:GetPlayers()) do
+					if p.Name:lower():sub(1, #partialName) == partialName then
+						targetPlayer = p
+						break
+					end
+				end
+
+				if targetPlayer then
+					run2 = true
+					if run2 then
+						while wait() do
+							RemoteEvent:FireServer({"Skill_SpherePunch", Vector3.new(0, 1e20, 0)})
+							if targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") and targetPlayer.PrivateStats.Reputation.Value == 0 and targetPlayer.Character:FindFirstChild("Humanoid").MaxHealth <= game.Players["vlad431922"].PrivateStats.FistStrength.Value * 10 then
+								targetPlayer.Character.HumanoidRootPart.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+							end
 						end
 					end
+				else
+					-- Игрок с таким ником не найден
+					print("Player not found for partial name: " .. partialName)
 				end
 
 			elseif message == "/e stack off" and not hasSentMessage then
@@ -266,8 +280,17 @@ coroutine.wrap(function()
 			elseif message:sub(1, 12) == "/e kreap on " and not hasSentMessage then
 				run2 = true
 				player:SetAttribute("HasSentMessage", true)
-				local targetPlayerName = message:sub(13)
-				local targetPlayer = game:GetService("Players"):FindFirstChild(targetPlayerName)
+				local partialName = message:sub(13):lower()
+				local Players = game:GetService("Players")
+				local targetPlayer = nil
+
+				for _, p in pairs(Players:GetPlayers()) do
+					if p.Name:lower():sub(1, #partialName) == partialName then
+						targetPlayer = p
+						break
+					end
+				end
+
 				coroutine.wrap(function()
 					while run2 do
 						local humanoid = targetPlayer.Character:FindFirstChildOfClass("Humanoid")
