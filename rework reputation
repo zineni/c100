@@ -40,56 +40,41 @@ local function getTitle(rep)
     end
 end
 
-local function getColor(rep, text)
+local function getTitleColor(rep)
     if rep < 0 then
-        local negativeColor = Color3.fromRGB(255, 0, 255)
-        local negativeStrokeColor = Color3.fromRGB(0, 255, 255)
-        Text.TextColor3 = negativeColor
-        Text.TextStrokeTransparency = 0.5
-        Text.TextStrokeColor3 = negativeStrokeColor
-
-        if rep <= -20 then
-            Text.TextColor3 = Color3.fromRGB(255, 0, 0)
-            Text.TextStrokeColor3 = Color3.fromRGB(34, 0, 45)
-        elseif rep <= -10 then
-            Text.TextColor3 = Color3.fromRGB(200, 0, 0)
-        elseif rep <= -5 then
-            Text.TextColor3 = Color3.fromRGB(100, 0, 0)
-        elseif rep < 0 then
-            Text.TextColor3 = Color3.fromRGB(120, 23, 0)
+        if rep <= -50000 then return "#1B040F"
+        elseif rep <= -20000 then return "#2E0826"
+        elseif rep <= -10000 then return "#3B0A2F"
+        elseif rep <= -5000 then return "#4A0B3B"
+        elseif rep <= -2000 then return "#6A0D4D"
+        elseif rep <= -1000 then return "#880E4F"
+        elseif rep <= -500 then return "#AD1457"
+        elseif rep <= -200 then return "#C2185B"
+        elseif rep <= -100 then return "#D81B60"
+        elseif rep <= -50 then return "#E91E63"
+        elseif rep <= -20 then return "#EC407A"
+        elseif rep <= -10 then return "#F06292"
+        elseif rep <= -5 then return "#F48FB1"
+        else return "#F8BBD0"
         end
     elseif rep > 0 then
-        if rep >= 50000 then
-            return "Paragon"
-        elseif rep >= 20000 then
-            return "Exalted"
-        elseif rep >= 10000 then
-            return "Ascendant"
-        elseif rep >= 5000 then
-            return "Immortal"
-        elseif rep >= 2000 then
-            return "Mythic"
-        elseif rep >= 1000 then
-            return "Legend"
-        elseif rep >= 500 then
-            return "Hero"
-        elseif rep >= 200 then
-            return "Champion"
-        elseif rep >= 100 then
-            return "Elite"
-        elseif rep >= 50 then
-            return "Veteran"
-        elseif rep >= 20 then
-            return "Skilled"
-        elseif rep >= 10 then
-            return "Adept"
-        elseif rep >= 5 then
-            return "Apprentice"
-        else
-            return "Novice"
+        if rep >= 50000 then return "#BF360C"
+        elseif rep >= 20000 then return "#D84315"
+        elseif rep >= 10000 then return "#E64A19"
+        elseif rep >= 5000 then return "#FF5722"
+        elseif rep >= 2000 then return "#FF6F00"
+        elseif rep >= 1000 then return "#FF8F00"
+        elseif rep >= 500 then return "#FFA000"
+        elseif rep >= 200 then return "#FFB300"
+        elseif rep >= 100 then return "#FFC107"
+        elseif rep >= 50 then return "#FFD700"
+        elseif rep >= 20 then return "#3B7A3B"
+        elseif rep >= 10 then return "#4CAF50"
+        elseif rep >= 5 then return "#7CC47F"
+        else return "#A8D5BA"
         end
     else
-        return "Neutral"
+        return "#FFFFFF" -- нейтральный белый
     end
 end
 
@@ -123,7 +108,6 @@ local function TabRemove()
 	end
 
 	local function findPlayerByDisplayName(displayName)
-		-- Пытаемся найти игрока по DisplayName или Name, совпадающему с displayName
 		for _, player in ipairs(Players:GetPlayers()) do
 			if player.Name == displayName or player.DisplayName == displayName then
 				return player
@@ -175,7 +159,7 @@ local function TabRemove()
 		return
 	end
 
-	local scrollingFrame = scrollingFrameClippingFrame:FindFirstChild("ScollingFrame") -- Проверь имя
+	local scrollingFrame = scrollingFrameClippingFrame:FindFirstChild("ScollingFrame")
 	if not scrollingFrame then
 		warn("ScollingFrame not found")
 		return
@@ -203,11 +187,87 @@ local function TabRemove()
 		-- print("Player: "..realName.." (displayed as "..displayName..") - Title: "..title)
 	end
 end
+local LocalPlayer = Players.LocalPlayer
+local Players = game:GetService("Players")
+
+local function ChatTitul()
+    local PlayerGui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+    if not PlayerGui then
+        warn("PlayerGui not found")
+        return
+    end
+
+    local LocalPlayerChat = PlayerGui:FindFirstChild("Chat")
+    if not LocalPlayerChat then
+        warn("LocalPlayerChat not found")
+        return
+    end
+
+    local Frame = LocalPlayerChat:FindFirstChild("Frame")
+    if not Frame then
+        warn("Frame not found")
+        return
+    end
+
+    local ChatChannelParentFrame = Frame:FindFirstChild("ChatChannelParentFrame")
+    if not ChatChannelParentFrame then
+        warn("ChatChannelParentFrame not found")
+        return
+    end
+
+    local Frame_MessageLogDisplay = ChatChannelParentFrame:FindFirstChild("Frame_MessageLogDisplay")
+    if not Frame_MessageLogDisplay then
+        warn("Frame_MessageLogDisplay not found")
+        return
+    end
+
+    local Scroller = Frame_MessageLogDisplay:FindFirstChild("Scroller")
+    if not Scroller then
+        warn("Scroller not found")
+        return
+    end
+
+    for _, child in ipairs(Scroller:GetChildren()) do
+        local TextLabel = child:FindFirstChild("TextLabel")
+        if TextLabel then
+            local TextButton = TextLabel:FindFirstChild("TextButton")
+            if TextButton then
+                local currentText = TextButton.Text
+                local title, usernameWithColon = currentText:match("^(.-) (.+)$")
+                if title and usernameWithColon then
+                    local username = usernameWithColon:gsub(":", "")
+                    local player = game.Players:FindFirstChild(username)
+                    if player and player:FindFirstChild("PrivateStats") and player.PrivateStats:FindFirstChild("Reputation") then
+                        local rep = player.PrivateStats.Reputation.Value
+                        local newTitle = getTitle(rep)
+                        local spaces = string.rep(" ", #newTitle - #title)
+                        local message = currentText:match(" " .. usernameWithColon .. "$")
+						TextButton.Text = " "
+						local originalText = TextLabel.Text
+						local trimmedText = originalText:gsub("^%s+", "")
+						TextLabel.RichText = true
+						local color = getTitleColor(rep)
+						TextLabel.Text = string.format('<font color="%s">[%s]</font> <font color="#FFFFFF">%s</font> %s', color, newTitle, username, trimmedText)
+                    else
+                        -- warn("Player not found or PrivateStats missing for: " .. username)
+                    end
+                else
+                    -- warn("Couldn't extract title and username from: " .. currentText)
+                end
+            else
+                -- warn("TextButton not found in TextLabel")
+            end
+        else
+            -- warn("TextLabel not found in child")
+        end
+    end
+end
 
 coroutine.wrap(function()
 	while true do
 		Titul()
 		TabRemove()
+		ChatTitul()
 		wait(1)
 	end
 end)()
