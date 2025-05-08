@@ -1,0 +1,213 @@
+local Players = game:GetService("Players")
+local targetFrame = game:GetService("CoreGui").PlayerList.Children.OffsetFrame.PlayerScrollList.SizeOffsetFrame.ScrollingFrameContainer.ScrollingFrameClippingFrame.ScollingFrame.OffsetUndoFrame
+local targetPlayer = Players.LocalPlayer
+
+local function getTitle(rep)
+    if rep < 0 then
+        if rep <= -50000 then return "Legend of Chaos"
+        elseif rep <= -20000 then return "Nemesis"
+        elseif rep <= -10000 then return "Dreadlord"
+        elseif rep <= -5000 then return "Executioner"
+        elseif rep <= -2000 then return "Brutalizer"
+        elseif rep <= -1000 then return "Reckless"
+        elseif rep <= -500 then return "Warlord"
+        elseif rep <= -200 then return "Bloodthirsty"
+        elseif rep <= -100 then return "PlayerKiller"
+        elseif rep <= -50 then return "Desperado"
+        elseif rep <= -20 then return "Bandit"
+        elseif rep <= -10 then return "Rogue"
+        elseif rep <= -5 then return "Troublemaker"
+        else return "Outlaw"
+        end
+    elseif rep > 0 then
+        if rep >= 50000 then return "Paragon"
+        elseif rep >= 20000 then return "Exalted"
+        elseif rep >= 10000 then return "Ascendant"
+        elseif rep >= 5000 then return "Immortal"
+        elseif rep >= 2000 then return "Mythic"
+        elseif rep >= 1000 then return "Legend"
+        elseif rep >= 500 then return "Hero"
+        elseif rep >= 200 then return "Champion"
+        elseif rep >= 100 then return "Elite"
+        elseif rep >= 50 then return "Veteran"
+        elseif rep >= 20 then return "Skilled"
+        elseif rep >= 10 then return "Adept"
+        elseif rep >= 5 then return "Apprentice"
+        else return "Novice"
+        end
+    else
+        return "Neutral"
+    end
+end
+
+local function getColor(rep, text)
+    if rep < 0 then
+        local negativeColor = Color3.fromRGB(255, 0, 255)
+        local negativeStrokeColor = Color3.fromRGB(0, 255, 255)
+        Text.TextColor3 = negativeColor
+        Text.TextStrokeTransparency = 0.5
+        Text.TextStrokeColor3 = negativeStrokeColor
+
+        if rep <= -20 then
+            Text.TextColor3 = Color3.fromRGB(255, 0, 0)
+            Text.TextStrokeColor3 = Color3.fromRGB(34, 0, 45)
+        elseif rep <= -10 then
+            Text.TextColor3 = Color3.fromRGB(200, 0, 0)
+        elseif rep <= -5 then
+            Text.TextColor3 = Color3.fromRGB(100, 0, 0)
+        elseif rep < 0 then
+            Text.TextColor3 = Color3.fromRGB(120, 23, 0)
+        end
+    elseif rep > 0 then
+        if rep >= 50000 then
+            return "Paragon"
+        elseif rep >= 20000 then
+            return "Exalted"
+        elseif rep >= 10000 then
+            return "Ascendant"
+        elseif rep >= 5000 then
+            return "Immortal"
+        elseif rep >= 2000 then
+            return "Mythic"
+        elseif rep >= 1000 then
+            return "Legend"
+        elseif rep >= 500 then
+            return "Hero"
+        elseif rep >= 200 then
+            return "Champion"
+        elseif rep >= 100 then
+            return "Elite"
+        elseif rep >= 50 then
+            return "Veteran"
+        elseif rep >= 20 then
+            return "Skilled"
+        elseif rep >= 10 then
+            return "Adept"
+        elseif rep >= 5 then
+            return "Apprentice"
+        else
+            return "Novice"
+        end
+    else
+        return "Neutral"
+    end
+end
+
+local function Titul()
+	if targetPlayer and targetPlayer:FindFirstChild("PrivateStats") and targetPlayer.PrivateStats:FindFirstChild("Reputation") then
+		local rep = targetPlayer.PrivateStats.Reputation.Value
+		local title = getTitle(rep)
+		if title then
+			local playerGui = Players.LocalPlayer:FindFirstChild("PlayerGui")
+			if playerGui and playerGui:FindFirstChild("ScreenGui") and playerGui.ScreenGui:FindFirstChild("MenuFrame") and
+			playerGui.ScreenGui.MenuFrame:FindFirstChild("InfoFrame") and playerGui.ScreenGui.MenuFrame.InfoFrame:FindFirstChild("StatusTxt") then
+				playerGui.ScreenGui.MenuFrame.InfoFrame.StatusTxt.Text = "Status : " .. title
+			end
+		end
+	end
+end
+
+local function TabRemove()
+	local Players = game:GetService("Players")
+
+	local function getDescendantByPath(root, path)
+		local current = root
+		for _, name in ipairs(path) do
+			if current then
+				current = current:FindFirstChild(name)
+			else
+				return nil
+			end
+		end
+		return current
+	end
+
+	local function findPlayerByDisplayName(displayName)
+		-- Пытаемся найти игрока по DisplayName или Name, совпадающему с displayName
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player.Name == displayName or player.DisplayName == displayName then
+				return player
+			end
+		end
+		return nil
+	end
+
+	local CoreGui = game:GetService("CoreGui")
+	local playerList = CoreGui:FindFirstChild("PlayerList")
+	if not playerList then
+		warn("PlayerList not found")
+		return
+	end
+
+	local offsetFrame = playerList:FindFirstChild("Children")
+	if not offsetFrame then
+		warn("Children not found")
+		return
+	end
+
+	offsetFrame = offsetFrame:FindFirstChild("OffsetFrame")
+	if not offsetFrame then
+		warn("OffsetFrame not found")
+		return
+	end
+
+	local playerScrollList = offsetFrame:FindFirstChild("PlayerScrollList")
+	if not playerScrollList then
+		warn("PlayerScrollList not found")
+		return
+	end
+
+	local sizeOffsetFrame = playerScrollList:FindFirstChild("SizeOffsetFrame")
+	if not sizeOffsetFrame then
+		warn("SizeOffsetFrame not found")
+		return
+	end
+
+	local scrollingFrameContainer = sizeOffsetFrame:FindFirstChild("ScrollingFrameContainer")
+	if not scrollingFrameContainer then
+		warn("ScrollingFrameContainer not found")
+		return
+	end
+
+	local scrollingFrameClippingFrame = scrollingFrameContainer:FindFirstChild("ScrollingFrameClippingFrame")
+	if not scrollingFrameClippingFrame then
+		warn("ScrollingFrameClippingFrame not found")
+		return
+	end
+
+	local scrollingFrame = scrollingFrameClippingFrame:FindFirstChild("ScollingFrame") -- Проверь имя
+	if not scrollingFrame then
+		warn("ScollingFrame not found")
+		return
+	end
+
+	local offsetUndoFrame = scrollingFrame:FindFirstChild("OffsetUndoFrame")
+	if not offsetUndoFrame then
+		warn("OffsetUndoFrame not found")
+		return
+	end
+
+	local statTextPath = {"ChildrenFrame", "GameStat_Status", "OverlayFrame", "StatText"}
+	local playerNamePath = {"ChildrenFrame", "NameFrame", "BGFrame", "OverlayFrame", "PlayerName", "PlayerName"}
+
+	for _, child in ipairs(offsetUndoFrame:GetChildren()) do
+		local statTextObj = getDescendantByPath(child, statTextPath)
+		local displayNameObj = getDescendantByPath(child, playerNamePath)
+		local displayName = displayNameObj and displayNameObj.Text or "Unknown"
+		local player = findPlayerByDisplayName(displayName)
+		local realName = player and player.Name or "UnknownPlayer"
+		local title = (statTextObj and statTextObj:IsA("TextLabel")) and statTextObj.Text or "NoTitle"
+		local rep = player.PrivateStats.Reputation.Value
+		local title = getTitle(rep)
+		statTextObj.Text = title
+		-- print("Player: "..realName.." (displayed as "..displayName..") - Title: "..title)
+	end
+end
+
+coroutine.wrap(function()
+	while true do
+		Titul()
+		TabRemove()
+		wait(1)
+	end
+end)()
