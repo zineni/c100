@@ -1,13 +1,38 @@
 local PlayerGui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
 local ScreenGui = PlayerGui:FindFirstChild("ScreenGui")
 
+local PlayerGui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+if not PlayerGui then
+    warn("PlayerGui not found")
+    return
+end
+
+local ScreenGui = PlayerGui:FindFirstChild("ScreenGui")
+if not ScreenGui then
+    warn("ScreenGui not found")
+    return
+end
+
 local MenuFrame = ScreenGui:FindFirstChild("MenuFrame")
-if MenuFrame then
-	MenuFrame.Position = UDim2.new(0.3, 0, 0.25, -30)
+if not MenuFrame then
+    warn("MenuFrame not found")
+    return
 end
 
 local LootBoxBtn = MenuFrame:FindFirstChild("LootBoxBtn")
+if not LootBoxBtn then
+    warn("LootBoxBtn not found")
+else
+    LootBoxBtn.Visible = false
+end
+
 local InvBtn = MenuFrame:FindFirstChild("InvBtn")
+if not InvBtn then
+    warn("InvBtn not found")
+else
+    InvBtn.Visible = false
+end
+
 local InfoFrame = MenuFrame:FindFirstChild("InfoFrame")
 
 local BTTxt = InfoFrame:FindFirstChild("BTTxt")
