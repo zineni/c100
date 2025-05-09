@@ -1,1 +1,299 @@
 
+-- Основные сервисы
+local Players = game:GetService("Players")
+local CoreGui = game:GetService("CoreGui")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+
+-- Локальные переменные
+local LocalPlayer = Players.LocalPlayer
+local authorizedUser = LocalPlayer.Name -- Только владелец может управлять APS
+local apsActive = false
+
+-- Список KOS-игроков (красные ники)
+local kosMembers = {
+    "GAMEMASTERv22", "GAMER_PROAHAT", "IshakTur0ay", "Nikoreta09",
+    "thecoptinpoo", "TahNaJaCT", "Zack7757", "zachod147"
+}
+
+-- Создание основного GUI
+local MainGUI = Instance.new("ScreenGui")
+MainGUI.Name = "APS_GUI"
+MainGUI.Parent = CoreGui
+MainGUI.ResetOnSpawn = false
+MainGUI.Enabled = false -- По умолчанию отключен
+
+-- Создание колонок
+local function createColumn(name, xPos, parent)
+    local frame = Instance.new("Frame")
+    frame.Name = name
+    frame.Parent = parent
+    frame.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+    frame.BorderColor3 = Color3.new(0, 0, 0)
+    frame.BackgroundTransparency = 0.5
+    frame.Position = UDim2.new(0, xPos, 0, 10)
+    frame.Size = UDim2.new(0, 200, 0, 600)
+    frame.ClipsDescendants = true
+    return frame
+end
+
+local Column1Frame = createColumn("Column1Frame", 10, MainGUI)
+local Column2Frame = createColumn("Column2Frame", 220, MainGUI)
+Column2Frame.Visible = false
+
+-- Заголовок статистики
+local AllStatsText = Instance.new("TextLabel")
+AllStatsText.Name = "AllStatsText"
+AllStatsText.Parent = Column1Frame
+AllStatsText.BackgroundTransparency = 1
+AllStatsText.Size = UDim2.new(1, 0, 0, 30)
+AllStatsText.Font = Enum.Font.Fantasy
+AllStatsText.TextColor3 = Color3.new(1, 1, 1)
+AllStatsText.Text = "All Players Stats"
+AllStatsText.TextSize = 18
+AllStatsText.TextXAlignment = Enum.TextXAlignment.Center
+
+-- Форматирование чисел (K, M, B и т.д.)
+local function formatNumber(value)
+    if not value then return "N/A" end
+    
+    local suffixes = {"", "K", "M", "B", "T", "Qa", "Qi"}
+    local suffixIndex = 1
+    
+    while value >= 1000 and suffixIndex < #suffixes do
+        value = value / 1000
+        suffixIndex = suffixIndex + 1
+    end
+    
+    return string.format(value % 1 == 0 and "%.0f%s" or "%.2f%s", value, suffixes[suffixIndex])
+end
+
+-- Управление видимостью второй колонки
+local function toggleSecondColumn(visible)
+    Column2Frame.Visible = visible
+end
+
+-- Анимация смещения фреймов
+local function shiftFramesDown(startFrame, deltaHeight)
+    local framesToMove = {}
+    
+    -- Находим все фреймы ниже текущего
+    for _, frame in ipairs(startFrame.Parent:GetChildren()) do
+        if frame:IsA("Frame") and frame.Name == "PlayerFrame" and frame.Position.Y.Offset > startFrame.Position.Y.Offset then
+            table.insert(framesToMove, frame)
+        end
+    end
+    
+    -- Применяем анимацию к найденным фреймам
+    for _, frame in ipairs(framesToMove) do
+        local tween = TweenService:Create(
+            frame,
+            TweenInfo.new(0.3, Enum.EasingStyle.Quad),
+            {Position = UDim2.new(
+                frame.Position.X.Scale, 
+                frame.Position.X.Offset, 
+                0, 
+                frame.Position.Y.Offset + deltaHeight
+            )}
+        )
+        tween:Play()
+    end
+end
+
+-- Создание фрейма для игрока
+local function createPlayerFrame(player, parent, positionY)
+    local isExpanded = false
+    local frameHeight = 40
+    local expandedHeight = 100
+    local spacing = 5
+
+    -- Основной фрейм игрока
+    local playerFrame = Instance.new("Frame")
+    playerFrame.Name = "PlayerFrame"
+    playerFrame.Parent = parent
+    playerFrame.BackgroundColor3 = Color3.new(0.15, 0.15, 0.15)
+    playerFrame.BorderColor3 = Color3.new(0, 0, 0)
+    playerFrame.Position = UDim2.new(0, 5, 0, positionY)
+    playerFrame.Size = UDim2.new(0, 190, 0, frameHeight)
+    playerFrame.ClipsDescendants = true
+
+    -- Метка с именем игрока
+    local nameLabel = Instance.new("TextLabel")
+    nameLabel.Name = "NameLabel"
+    nameLabel.Parent = playerFrame
+    nameLabel.BackgroundTransparency = 1
+    nameLabel.Size = UDim2.new(1, -10, 0, 30)
+    nameLabel.Position = UDim2.new(0, 5, 0, 5)
+    nameLabel.Font = Enum.Font.Fantasy
+    nameLabel.TextColor3 = table.find(kosMembers, player.Name) and Color3.new(1, 0, 0) or Color3.new(1, 1, 1)
+    nameLabel.TextSize = 18
+    nameLabel.Text = player.Name
+    nameLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Метка со статистикой (скрыта по умолчанию)
+    local statsLabel = Instance.new("TextLabel")
+    statsLabel.Name = "StatsLabel"
+    statsLabel.Parent = playerFrame
+    statsLabel.BackgroundTransparency = 1
+    statsLabel.Position = UDim2.new(0, 5, 0, 35)
+    statsLabel.Size = UDim2.new(1, -10, 0, 60)
+    statsLabel.Font = Enum.Font.Fantasy
+    statsLabel.TextColor3 = Color3.new(1, 1, 1)
+    statsLabel.TextSize = 14
+    statsLabel.TextWrapped = true
+    statsLabel.Visible = false
+
+    -- Обработчик клика по имени игрока
+    nameLabel.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            isExpanded = not isExpanded
+            local deltaHeight = isExpanded and (expandedHeight - frameHeight) or (frameHeight - expandedHeight)
+            
+            -- Анимация изменения размера фрейма
+            local sizeTween = TweenService:Create(
+                playerFrame,
+                TweenInfo.new(0.3, Enum.EasingStyle.Quad),
+                {Size = UDim2.new(0, 190, 0, isExpanded and expandedHeight or frameHeight)}
+            )
+            sizeTween:Play()
+            
+            -- Смещение нижних фреймов
+            shiftFramesDown(playerFrame, deltaHeight)
+            
+            -- Обновление статистики при раскрытии
+            if isExpanded then
+                local stats = player:FindFirstChild("PrivateStats")
+                statsLabel.Visible = true
+                if stats then
+                    statsLabel.Text = string.format(
+                        "Body: %s\nFist: %s\nPps: %s",
+                        formatNumber(stats:FindFirstChild("BodyToughness") and stats.BodyToughness.Value),
+                        formatNumber(stats:FindFirstChild("FistStrength") and stats.FistStrength.Value),
+                        formatNumber(stats:FindFirstChild("PsychicPower") and stats.PsychicPower.Value)
+                    )
+                else
+                    statsLabel.Text = "Stats not found"
+                end
+            else
+                statsLabel.Visible = false
+            end
+        end
+    end)
+
+    return playerFrame
+end
+
+-- Обновление статистики всех игроков
+local function updatePlayerStats()
+    -- Очистка старых фреймов
+    for _, child in ipairs(Column1Frame:GetChildren()) do
+        if child:IsA("Frame") and child.Name == "PlayerFrame" then
+            child:Destroy()
+        end
+    end
+    
+    for _, child in ipairs(Column2Frame:GetChildren()) do
+        if child:IsA("Frame") and child.Name == "PlayerFrame" then
+            child:Destroy()
+        end
+    end
+
+    local players = Players:GetPlayers()
+    local needSecondColumn = #players > 12
+    toggleSecondColumn(needSecondColumn)
+
+    -- Распределение игроков по колонкам
+    local yOffset1, yOffset2 = 35, 35
+    local spacing = 5
+
+    for i, player in ipairs(players) do
+        if i <= 12 or not needSecondColumn then
+            createPlayerFrame(player, Column1Frame, yOffset1)
+            yOffset1 = yOffset1 + 40 + spacing
+        else
+            createPlayerFrame(player, Column2Frame, yOffset2)
+            yOffset2 = yOffset2 + 40 + spacing
+        end
+    end
+
+    -- Корректировка размеров колонок
+    Column1Frame.Size = UDim2.new(0, 200, 0, yOffset1 + 10)
+    if needSecondColumn then
+        Column2Frame.Size = UDim2.new(0, 200, 0, yOffset2 + 10)
+    end
+end
+
+-- Управление состоянием APS
+local function setAPSActive(state)
+    if apsActive == state then return end
+    
+    apsActive = state
+    MainGUI.Enabled = state
+    
+    if state then
+        updatePlayerStats()
+    else
+        -- Очистка при выключении
+        for _, child in ipairs(Column1Frame:GetChildren()) do
+            if child:IsA("Frame") and child.Name == "PlayerFrame" then
+                child:Destroy()
+            end
+        end
+        for _, child in ipairs(Column2Frame:GetChildren()) do
+            if child:IsA("Frame") and child.Name == "PlayerFrame" then
+                child:Destroy()
+            end
+        end
+    end
+end
+
+-- Обработчик команд чата
+local function onPlayerChatted(player, message)
+    if player.Name ~= authorizedUser then return end
+    
+    local msg = message:lower()
+    
+    if msg == "/e aps on" then
+        setAPSActive(true)
+    elseif msg == "/e aps off" then
+        setAPSActive(false)
+    end
+end
+
+-- Подписка на события игроков
+local function setupPlayerEvents(player)
+    player.Chatted:Connect(function(msg)
+        onPlayerChatted(player, msg)
+    end)
+end
+
+-- Инициализация существующих игроков
+for _, player in ipairs(Players:GetPlayers()) do
+    setupPlayerEvents(player)
+end
+
+-- Подписка на новых игроков
+Players.PlayerAdded:Connect(function(player)
+    setupPlayerEvents(player)
+    
+    if apsActive then
+        updatePlayerStats()
+    end
+end)
+
+-- Обновление при выходе игрока
+Players.PlayerRemoving:Connect(function()
+    if apsActive then
+        updatePlayerStats()
+    end
+end)
+
+-- Автоматическое обновление статистики каждые 5 секунд
+coroutine.wrap(function()
+    while true do
+        if apsActive then
+            updatePlayerStats()
+        end
+        wait(5)
+    end
+end)()
