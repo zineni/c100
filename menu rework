@@ -48,27 +48,3 @@ local GuideTxt = InfoFrame:FindFirstChild("GuideTxt")
 if GuideTxt then
 	GuideTxt:Destroy()
 end
-
-local HttpService = game:GetService("HttpService")
-
-local saveFolder = "c100" -
-local saveFile = saveFolder .. "/quest_lab_greeting.json"
-
-local function loadGreetingState()
-    if isfile(saveFile) then
-        local data = readfile(saveFile)
-        local success, decoded = pcall(HttpService.JSONDecode, HttpService, data)
-        if success and type(decoded) == "table" and decoded.closed == true then
-            return true
-        end
-    end
-    return false
-end
-
-local function saveGreetingState(closed)
-    if not isfolder(saveFolder) then
-        makefolder(saveFolder)
-    end
-    local data = HttpService:JSONEncode({ closed = closed })
-    writefile(saveFile, data)
-end
