@@ -1,0 +1,152 @@
+local HttpService = game:GetService("HttpService")
+
+local saveFolder = "c100"
+local saveFile = saveFolder .. "/quest_lab_greeting.json"
+
+local function loadGreetingState()
+    if isfile(saveFile) then
+        local data = readfile(saveFile)
+        local success, decoded = pcall(HttpService.JSONDecode, HttpService, data)
+        if success and type(decoded) == "table" and decoded.closed == true then
+            return true
+        end
+    end
+    return false
+end
+
+local function saveGreetingState(closed)
+    if not isfolder(saveFolder) then
+        makefolder(saveFolder)
+    end
+    local data = HttpService:JSONEncode({ closed = closed })
+    writefile(saveFile, data)
+end
+
+local function Menurevork()
+
+	local PlayerGui = game.Players.LocalPlayer:FindFirstChild("PlayerGui")
+	local ScreenGui = PlayerGui:FindFirstChild("ScreenGui")
+
+	local MenuFrame = ScreenGui:FindFirstChild("MenuFrame")
+	if MenuFrame then
+		MenuFrame.Position = UDim2.new(0.3, 0, 0.25, -30)
+	end
+
+	local LootBoxBtn = MenuFrame:FindFirstChild("LootBoxBtn")
+	local InvBtn = MenuFrame:FindFirstChild("InvBtn")
+	local InfoFrame = MenuFrame:FindFirstChild("InfoFrame")
+
+	local BTTxt = InfoFrame:FindFirstChild("BTTxt")
+
+	local GuideImg = InfoFrame:FindFirstChild("GuideImg")
+	if GuideImg then
+		GuideImg:Destroy()
+	end
+
+	local GuideTxt = InfoFrame:FindFirstChild("GuideTxt")
+	if GuideTxt then
+		GuideTxt:Destroy()
+	end
+
+	local Players = game:GetService("Players")
+	local LocalPlayer = Players.LocalPlayer
+
+	local GangBtn = MenuFrame:FindFirstChild("GangBtn")
+	if GangBtn then
+		GangBtn.Text = "Quest"
+		local GangFrame = MenuFrame:FindFirstChild("GangFrame")
+		if GangFrame then
+			for _, child in ipairs(GangFrame:GetChildren()) do
+				child:Destroy()
+			end
+
+			local greetingClosed = loadGreetingState()
+
+			if not greetingClosed then
+				local greeting = Instance.new("TextLabel")
+				greeting.Name = "GreetingText"
+				greeting.Size = UDim2.new(1, 0, 0, 50)
+				greeting.Position = UDim2.new(0, 0, 0, 0)
+				greeting.BackgroundTransparency = 1
+				greeting.TextColor3 = Color3.new(0, 0, 0)
+				greeting.TextScaled = true
+				greeting.Font = Enum.Font.SourceSans
+				greeting.Text = "Hi " .. LocalPlayer.Name .. "! This is the place where you can view your quests and collect your rewards. (click on the text to remove it)"
+				greeting.Parent = GangFrame
+				greeting.TextWrapped = true
+				greeting.TextXAlignment = Enum.TextXAlignment.Center
+				greeting.TextYAlignment = Enum.TextYAlignment.Center
+				greeting.Active = true
+				greeting.Selectable = true
+
+				local text1 = Instance.new("TextLabel")
+				text1.Name = "Text1"
+				text1.Size = UDim2.new(1, 0, 0, 40)
+				text1.Position = UDim2.new(0, 0, 0, 60)
+				text1.BackgroundTransparency = 1
+				text1.TextColor3 = Color3.new(0, 0, 0)
+				text1.TextScaled = true
+				text1.Font = Enum.Font.SourceSans
+				text1.Text = "1. ..."
+				text1.Parent = GangFrame
+				text1.TextXAlignment = Enum.TextXAlignment.Left
+				text1.TextYAlignment = Enum.TextYAlignment.Center
+
+				local text2 = Instance.new("TextLabel")
+				text2.Name = "Text2"
+				text2.Size = UDim2.new(1, 0, 0, 40)
+				text2.Position = UDim2.new(0, 0, 0, 105)
+				text2.BackgroundTransparency = 1
+				text2.TextColor3 = Color3.new(0, 0, 0)
+				text2.TextScaled = true
+				text2.Font = Enum.Font.SourceSans
+				text2.Text = "2. ?????"
+				text2.Parent = GangFrame
+				text2.TextXAlignment = Enum.TextXAlignment.Left
+				text2.TextYAlignment = Enum.TextYAlignment.Center
+
+				local function shiftTextsUp()
+					text1:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.3, true)
+					text2:TweenPosition(UDim2.new(0, 0, 0, 45), "Out", "Quad", 0.3, true)
+				end
+
+				greeting.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 then
+						greeting:Destroy()
+						shiftTextsUp()
+						saveGreetingState(true)
+					end
+				end)
+			else
+				local text1 = Instance.new("TextLabel")
+				text1.Name = "Text1"
+				text1.Size = UDim2.new(1, 0, 0, 40)
+				text1.Position = UDim2.new(0, 0, 0, 0)
+				text1.BackgroundTransparency = 1
+				text1.TextColor3 = Color3.new(0, 0, 0)
+				text1.TextScaled = true
+				text1.Font = Enum.Font.SourceSans
+				text1.Text = "1. ..."
+				text1.Parent = GangFrame
+				text1.TextXAlignment = Enum.TextXAlignment.Left
+				text1.TextYAlignment = Enum.TextYAlignment.Center
+
+				local text2 = Instance.new("TextLabel")
+				text2.Name = "Text2"
+				text2.Size = UDim2.new(1, 0, 0, 40)
+				text2.Position = UDim2.new(0, 0, 0, 45)
+				text2.BackgroundTransparency = 1
+				text2.TextColor3 = Color3.new(0, 0, 0)
+				text2.TextScaled = true
+				text2.Font = Enum.Font.SourceSans
+				text2.Text = "2. ?????"
+				text2.Parent = GangFrame
+				text2.TextXAlignment = Enum.TextXAlignment.Left
+				text2.TextYAlignment = Enum.TextYAlignment.Center
+			end
+		end
+	end
+
+end
+
+Menurevork()
