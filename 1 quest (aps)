@@ -1,29 +1,21 @@
-
--- Основные сервисы
 local Players = game:GetService("Players")
 local CoreGui = game:GetService("CoreGui")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-
--- Локальные переменные
 local LocalPlayer = Players.LocalPlayer
 local authorizedUser = LocalPlayer.Name -- Только владелец может управлять APS
 local apsActive = false
-
--- Список KOS-игроков (красные ники)
 local kosMembers = {
     "GAMEMASTERv22", "GAMER_PROAHAT", "IshakTur0ay", "Nikoreta09",
     "thecoptinpoo", "TahNaJaCT", "Zack7757", "zachod147"
 }
 
--- Создание основного GUI
 local MainGUI = Instance.new("ScreenGui")
 MainGUI.Name = "APS_GUI"
 MainGUI.Parent = CoreGui
 MainGUI.ResetOnSpawn = false
 MainGUI.Enabled = false -- По умолчанию отключен
 
--- Создание колонок
 local function createColumn(name, xPos, parent)
     local frame = Instance.new("Frame")
     frame.Name = name
@@ -41,7 +33,6 @@ local Column1Frame = createColumn("Column1Frame", 10, MainGUI)
 local Column2Frame = createColumn("Column2Frame", 220, MainGUI)
 Column2Frame.Visible = false
 
--- Заголовок статистики
 local AllStatsText = Instance.new("TextLabel")
 AllStatsText.Name = "AllStatsText"
 AllStatsText.Parent = Column1Frame
@@ -53,7 +44,6 @@ AllStatsText.Text = "All Players Stats"
 AllStatsText.TextSize = 18
 AllStatsText.TextXAlignment = Enum.TextXAlignment.Center
 
--- Форматирование чисел (K, M, B и т.д.)
 local function formatNumber(value)
     if not value then return "N/A" end
     
@@ -68,23 +58,19 @@ local function formatNumber(value)
     return string.format(value % 1 == 0 and "%.0f%s" or "%.2f%s", value, suffixes[suffixIndex])
 end
 
--- Управление видимостью второй колонки
 local function toggleSecondColumn(visible)
     Column2Frame.Visible = visible
 end
 
--- Анимация смещения фреймов
 local function shiftFramesDown(startFrame, deltaHeight)
     local framesToMove = {}
-    
-    -- Находим все фреймы ниже текущего
+
     for _, frame in ipairs(startFrame.Parent:GetChildren()) do
         if frame:IsA("Frame") and frame.Name == "PlayerFrame" and frame.Position.Y.Offset > startFrame.Position.Y.Offset then
             table.insert(framesToMove, frame)
         end
     end
-    
-    -- Применяем анимацию к найденным фреймам
+
     for _, frame in ipairs(framesToMove) do
         local tween = TweenService:Create(
             frame,
@@ -100,14 +86,12 @@ local function shiftFramesDown(startFrame, deltaHeight)
     end
 end
 
--- Создание фрейма для игрока
 local function createPlayerFrame(player, parent, positionY)
     local isExpanded = false
     local frameHeight = 40
     local expandedHeight = 100
     local spacing = 5
 
-    -- Основной фрейм игрока
     local playerFrame = Instance.new("Frame")
     playerFrame.Name = "PlayerFrame"
     playerFrame.Parent = parent
@@ -117,7 +101,6 @@ local function createPlayerFrame(player, parent, positionY)
     playerFrame.Size = UDim2.new(0, 190, 0, frameHeight)
     playerFrame.ClipsDescendants = true
 
-    -- Метка с именем игрока
     local nameLabel = Instance.new("TextLabel")
     nameLabel.Name = "NameLabel"
     nameLabel.Parent = playerFrame
@@ -130,7 +113,6 @@ local function createPlayerFrame(player, parent, positionY)
     nameLabel.Text = player.Name
     nameLabel.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- Метка со статистикой (скрыта по умолчанию)
     local statsLabel = Instance.new("TextLabel")
     statsLabel.Name = "StatsLabel"
     statsLabel.Parent = playerFrame
@@ -143,24 +125,19 @@ local function createPlayerFrame(player, parent, positionY)
     statsLabel.TextWrapped = true
     statsLabel.Visible = false
 
-    -- Обработчик клика по имени игрока
     nameLabel.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             isExpanded = not isExpanded
             local deltaHeight = isExpanded and (expandedHeight - frameHeight) or (frameHeight - expandedHeight)
-            
-            -- Анимация изменения размера фрейма
+
             local sizeTween = TweenService:Create(
                 playerFrame,
                 TweenInfo.new(0.3, Enum.EasingStyle.Quad),
                 {Size = UDim2.new(0, 190, 0, isExpanded and expandedHeight or frameHeight)}
             )
             sizeTween:Play()
-            
-            -- Смещение нижних фреймов
             shiftFramesDown(playerFrame, deltaHeight)
-            
-            -- Обновление статистики при раскрытии
+
             if isExpanded then
                 local stats = player:FindFirstChild("PrivateStats")
                 statsLabel.Visible = true
@@ -182,8 +159,6 @@ local function createPlayerFrame(player, parent, positionY)
 
     return playerFrame
 end
-
--- Обновление статистики всех игроков
 local function updatePlayerStats()
     -- Очистка старых фреймов
     for _, child in ipairs(Column1Frame:GetChildren()) do
@@ -202,7 +177,6 @@ local function updatePlayerStats()
     local needSecondColumn = #players > 12
     toggleSecondColumn(needSecondColumn)
 
-    -- Распределение игроков по колонкам
     local yOffset1, yOffset2 = 35, 35
     local spacing = 5
 
@@ -216,14 +190,12 @@ local function updatePlayerStats()
         end
     end
 
-    -- Корректировка размеров колонок
     Column1Frame.Size = UDim2.new(0, 200, 0, yOffset1 + 10)
     if needSecondColumn then
         Column2Frame.Size = UDim2.new(0, 200, 0, yOffset2 + 10)
     end
 end
 
--- Управление состоянием APS
 local function setAPSActive(state)
     if apsActive == state then return end
     
@@ -233,7 +205,6 @@ local function setAPSActive(state)
     if state then
         updatePlayerStats()
     else
-        -- Очистка при выключении
         for _, child in ipairs(Column1Frame:GetChildren()) do
             if child:IsA("Frame") and child.Name == "PlayerFrame" then
                 child:Destroy()
@@ -247,7 +218,6 @@ local function setAPSActive(state)
     end
 end
 
--- Обработчик команд чата
 local function onPlayerChatted(player, message)
     if player.Name ~= authorizedUser then return end
     
@@ -260,19 +230,16 @@ local function onPlayerChatted(player, message)
     end
 end
 
--- Подписка на события игроков
 local function setupPlayerEvents(player)
     player.Chatted:Connect(function(msg)
         onPlayerChatted(player, msg)
     end)
 end
 
--- Инициализация существующих игроков
 for _, player in ipairs(Players:GetPlayers()) do
     setupPlayerEvents(player)
 end
 
--- Подписка на новых игроков
 Players.PlayerAdded:Connect(function(player)
     setupPlayerEvents(player)
     
@@ -281,14 +248,12 @@ Players.PlayerAdded:Connect(function(player)
     end
 end)
 
--- Обновление при выходе игрока
 Players.PlayerRemoving:Connect(function()
     if apsActive then
         updatePlayerStats()
     end
 end)
 
--- Автоматическое обновление статистики каждые 5 секунд
 coroutine.wrap(function()
     while true do
         if apsActive then
