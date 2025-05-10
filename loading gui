@@ -1,78 +1,175 @@
-print("loading")
 
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
 
-local player = Players.LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local Players = game:GetService("Players").LocalPlayer
+local TweenService = game:GetService("TweenService")
 
-local screenGui = Instance.new("ScreenGui", playerGui)
-local frame = Instance.new("Frame", screenGui)
-frame.Size = UDim2.new(0, 300, 0, 25)
-frame.Position = UDim2.new(0.5, 0, 0, -30)
-frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-frame.AnchorPoint = Vector2.new(0.5, 0)
+local PlayerGui = Players.PlayerGui
 
-local progressBar = Instance.new("Frame", frame)
-progressBar.Size = UDim2.new(0, 0, 1, 0)
-progressBar.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+local ScreenGui = Instance.new("ScreenGui", PlayerGui)
 
-local textLabel = Instance.new("TextLabel", frame)
-textLabel.Size = UDim2.new(1, 0, 1, 0)
-textLabel.BackgroundTransparency = 1
-textLabel.TextColor3 = Color3.new(1,1,1)
-textLabel.Text = "Loading: 0%"
-textLabel.TextScaled = true
+--Содержимое--
 
-local duration = 5
-local steps = 100
-local currentStep = 0
+--Frame
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.AnchorPoint = Vector2.new(0.5, 0.5)
+Frame.BackgroundColor3 = Color3.fromRGB(43, 43, 43)
+Frame.BackgroundTransparency = 0.25
+Frame.Size = UDim2.new(0, 576,0, 274)
+Frame.Position = UDim2.new(0.5, 0, 0, 360)
 
-repeat task.wait() until game:IsLoaded()
+--FrameUiCorner
+local FrameUiCorner = Instance.new("UICorner", Frame)
+FrameUiCorner.CornerRadius = UDim.new(0, 16)
 
-local function animateShrink(frameToShrink, heightFrom, heightTo, stepTime)
-    local stepCount = 20
-    local heightStep = (heightFrom - heightTo) / stepCount
-    for i = 1, stepCount do
-        frameToShrink.Size = UDim2.new(0, 300, 0, heightFrom - heightStep * i)
-        wait(stepTime)
-    end
+--FrameUiStroke
+local FrameUiStroke = Instance.new("UIStroke", Frame)
+FrameUiStroke.Color = Color3.fromRGB(34,34,34)
+FrameUiStroke.Thickness = 4
+FrameUiStroke.Transparency = 0.05
+
+--Text1
+local Text1 = Instance.new("TextLabel", Frame)
+Text1.BackgroundTransparency = 1
+Text1.Size = UDim2.new(0, 338,0, 51)
+Text1.Position = UDim2.new(0, 0,0.062, 0)
+Text1.Font = Enum.Font.Cartoon
+Text1.Text = "- Loading - "
+Text1.TextScaled = true
+Text1.TextColor3 = Color3.fromRGB(255,255,255)
+
+--Text1UiCorner
+local Text1UiCorner = Instance.new("UIStroke", Text1)
+Text1UiCorner.Color = Color3.fromRGB(34,34,34)
+Text1UiCorner.Thickness = 4
+Text1UiCorner.Transparency = 0.05
+
+--Text2
+local Text2 = Instance.new("TextLabel", Frame)
+Text2.BackgroundTransparency = 1
+Text2.Size = UDim2.new(0, 259,0, 143)
+Text2.Position = UDim2.new(0.068, 0,0.292, 0)
+Text2.Font = Enum.Font.Cartoon
+Text2.Text = "This will take few seconds, before your script will load"
+Text2.TextScaled = true
+Text2.TextColor3 = Color3.fromRGB(255,255,255)
+
+--FrameUiStroke2
+local FrameUiStrokeClone = FrameUiStroke:Clone()
+FrameUiStrokeClone.Parent = Text2
+
+--Frame2
+local Frame2 = Instance.new("Frame", Frame)
+Frame2.BackgroundColor3 = Color3.fromRGB(35,35,35)
+Frame2.BackgroundTransparency = 0.5
+Frame2.Size = UDim2.new(0, 220,0, 220)
+Frame2.Position = UDim2.new(0.587, 0,0.099, 0)
+
+--FrameUiCorner2
+local FrameUiCorner2 = Instance.new("UICorner", Frame2)
+FrameUiCorner2.CornerRadius = UDim.new(1,0)
+
+--ImageLabel
+local ImageLabel = Instance.new("ImageLabel", Frame2)
+ImageLabel.BackgroundTransparency = 1
+ImageLabel.Size = UDim2.new(0, 185,0, 185)
+ImageLabel.Position = UDim2.new(0.1,0,0.075,0)
+ImageLabel.Image = "http://www.roblox.com/asset/?id=17794067799"
+
+--Text3
+local Text3 = Instance.new("TextLabel", Frame)
+Text3.BackgroundTransparency = 1
+Text3.Size = UDim2.new(0, 443,0, 91)
+Text3.Position = UDim2.new(0.116, 0,0.04, 0)
+Text3.Font = Enum.Font.Cartoon
+Text3.Text = "Welcome, "..Players.Name
+Text3.TextScaled = true
+Text3.TextColor3 = Color3.fromRGB(255,255,255)
+Text3.Transparency = 1
+
+--FrameUiStroke2
+local FrameUiStrokeClone2 = FrameUiStroke:Clone()
+FrameUiStrokeClone2.Parent = Text3
+FrameUiStrokeClone2.Transparency = 1
+
+--Text4
+local Text4 = Instance.new("TextLabel", Frame)
+Text4.BackgroundTransparency = 1
+Text4.Size = UDim2.new(0, 259,0, 33)
+Text4.Position = UDim2.new(0.274, 0,0.339, 0)
+Text4.Font = Enum.Font.Cartoon
+Text4.Text = "Enjoy!"
+Text4.TextScaled = true
+Text4.TextColor3 = Color3.fromRGB(255,255,255)
+Text4.Transparency = 1
+
+--FrameUiStroke3
+local FrameUiStrokeClone3 = FrameUiStroke:Clone()
+FrameUiStrokeClone3.Parent = Text4
+FrameUiStrokeClone3.Transparency = 1
+
+--???
+local function ImageLabelSpin()
+  local info = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out, -1, false, 0)
+
+  local tween = TweenService:Create(ImageLabel, info, {Rotation = 360})
+  tween:Play()
 end
 
-local connection
-connection = RunService.Heartbeat:Connect(function(dt)
-    currentStep = currentStep + dt * (steps / duration)
-    if currentStep >= steps then
-        currentStep = steps
-        connection:Disconnect()
-        textLabel.Text = "Loading complete!"
-        wait(0.5)
+ImageLabelSpin()
 
-        animateShrink(frame, 25, 0, 0.01)
+wait(3)
+for i = 0,10,0.5 do
+  wait(0.005)
+  Text1.TextTransparency = i/10
+  Text1UiCorner.Transparency = i/10
+end
 
-        progressBar:Destroy()
-        textLabel:Destroy()
+wait(0.1)
+for i = 0,10,0.5 do
+  wait(0.005)
+  Text2.TextTransparency = i/10
+  FrameUiStrokeClone.Transparency = i/10
+end
 
-        frame.Size = UDim2.new(0, 300, 0, 100)
-        frame.Position = UDim2.new(0.5, 0, 0, -30)
-        frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+wait(0.1)
+for i = 0,10,0.5 do
+  wait(0.005)
+  Frame2.BackgroundTransparency = i/10
+  ImageLabel.ImageTransparency = i/10
+end
 
-        local welcomeText = Instance.new("TextLabel", frame)
-        welcomeText.Size = UDim2.new(1, 0, 1, 0)
-        welcomeText.BackgroundTransparency = 1
-        welcomeText.TextColor3 = Color3.new(1,1,1)
-        welcomeText.TextScaled = true
-        welcomeText.Text = "Welcome, " .. player.Name .. "!"
-        welcomeText.AnchorPoint = Vector2.new(0.5, 0.5)
-        welcomeText.Position = UDim2.new(0.5, 0, 0.5, 0)
-        wait(2)
+wait(0.1)
+repeat 
+  wait(0.01)
+  Text3.TextTransparency -= 0.25
+  FrameUiStrokeClone2.Transparency -= 0.25
+until
+Text3.TextTransparency == 0 and FrameUiStrokeClone2.Transparency == 0
 
-        animateShrink(frame, 100, 0, 0.01)
-        screenGui:Destroy()
+wait(0.35)
+repeat 
+  wait(0.01)
+  Text4.TextTransparency -= 0.25
+  FrameUiStrokeClone3.Transparency -= 0.25
+until
+Text4.TextTransparency == 0 and FrameUiStrokeClone3.Transparency == 0
 
-        return
-    end
-    local percent = math.floor((currentStep / steps) * 100)
-    progressBar.Size = UDim2.new(currentStep / steps, 0, 1, 0)
-    textLabel.Text = "Loading: "..percent.."%"
-end)
+wait(0.1)
+for i = 0,10,0.5 do
+  wait(0.005)
+  Text3.TextTransparency = i/10
+  FrameUiStrokeClone2.Transparency = i/10
+end
+
+wait(0.1)
+for i = 0,10,0.5 do
+  wait(0.005)
+  Text4.TextTransparency = i/10
+  FrameUiStrokeClone3.Transparency = i/10
+end
+
+wait(0.55)
+Frame:TweenSize(UDim2.new(0,0,0,0), Enum.EasingDirection.InOut, Enum.EasingStyle.Quad, 1)
+
+wait(1)
+Frame:Destroy()
